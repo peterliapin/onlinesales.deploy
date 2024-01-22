@@ -1,8 +1,8 @@
 version: "2"
   
 services:
-  cms_onlinesale:
-    container_name: cms_onlinesales
+  onlinesale:
+    container_name: onlinesales
     image: wavepoint/onlinesales:1.2.7-pre
     env_file:
       - ./config.env
