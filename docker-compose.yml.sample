@@ -1,0 +1,31 @@
+version: "2"
+  
+services:
+  cms_onlinesale:
+    container_name: cms_onlinesales
+    image: wavepoint/onlinesales:1.2.7-pre
+    env_file:
+      - ./config.env
+    volumes:
+      - plugins:/app/plugins
+      - frontend:/app/wwwroot
+    restart: unless-stopped
+
+volumes:
+  plugins:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: /home/onlinesales/onlinesales.deploy/plugins
+  frontend:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: /home/onlinesales/onlinesales.deploy/frontend
+
+networks:
+  default:
+    name: onlinesales-network
+    external: true

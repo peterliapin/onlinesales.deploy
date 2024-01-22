@@ -1,0 +1,58 @@
+version: '3.4'
+  
+services:
+  elasticsearch:
+    container_name: elasticsearch
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.6
+    volumes:
+      - elasticsearch-data:/usr/share/elasticsearch/data
+    environment:
+      - xpack.security.enabled=false
+      - "discovery.type=single-node"
+      - "ES_JAVA_OPTS=-Xms1024m -Xmx1024m"
+    restart: unless-stopped
+
+  kibana:
+    container_name: kibana
+    image: docker.elastic.co/kibana/kibana:7.17.6
+    depends_on:
+      - elasticsearch
+    environment:
+      SERVER_REWRITEBASEPATH: true
+      SERVER_BASEPATH: /kibana
+      ELASTICSEARCH_HOSTS: '["http://elasticsearch:9200"]'
+    restart: unless-stopped
+
+  postgres:
+    container_name: postgres
+    image: postgres:14.5
+    environment:
+      TZ: 'UTC'
+      PGTZ: 'UTC'
+      POSTGRES_DB: ${PG_DB}
+      POSTGRES_USER: ${PG_USER}
+      POSTGRES_PASSWORD: ${PG_PWD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+volumes:
+  postgres-data:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: /data/onlinesales/postgres-data
+  elasticsearch-data:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: /data/onlinesales/elasticsearch-data
+
+networks:
+  default:
+    name: onlinesales-network
+    external: true
