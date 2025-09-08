@@ -25,14 +25,16 @@ This document provides a sample deployment approach for LeadCMS using Docker Com
 
 ---
 
+
 ## 1. Clone the Repository
 
 ```bash
-git clone https://github.com/LeadCMS/leadcms.core.git
-cd leadcms.core/docker-compose
+git clone https://github.com/LeadCMS/leadcms.deploy.git
+cd leadcms.deploy
 ```
 
 ---
+
 
 ## 2. Generate Environment Variables
 
@@ -43,7 +45,6 @@ LeadCMS uses a `.env` file for configuration. You **must** generate this file be
 Run the provided shell script:
 
 ```bash
-cd docker-compose
 chmod +x generate-env.sh
 ./generate-env.sh
 ```
@@ -53,7 +54,6 @@ chmod +x generate-env.sh
 Run the PowerShell script:
 
 ```powershell
-cd docker-compose
 .\generate-env.ps1
 ```
 
@@ -92,9 +92,10 @@ You can add more languages by incrementing the index.
 
 ---
 
+
 ## 4. Start the Sample Stack
 
-From the `docker-compose` directory, run:
+From the repository root, run:
 
 ```bash
 docker-compose up -d
@@ -102,8 +103,6 @@ docker-compose up -d
 
 - This will start:
   - PostgreSQL (sample, local container)
-  - Elasticsearch (sample, local container)
-  - Kibana (sample, local container)
   - LeadCMS core application
 
 ---
@@ -121,6 +120,7 @@ docker-compose up -d
 - Email: as set in `.env` (`DEFAULTUSERS__0__EMAIL`)
 
 ---
+
 
 ## 7. Stopping and Cleaning Up
 
@@ -142,20 +142,21 @@ docker compose down -v
 
 ### PostgreSQL Authentication Issues
 
+
 If you encounter authentication errors when connecting to PostgreSQL, it may be due to an existing Docker volume containing an old database with a different password. In this case:
 
 1. Stop all running containers:
-    ```bash
-    docker compose down
-    ```
+  ```bash
+  docker compose down
+  ```
 2. Remove all persistent data volumes (this will delete all data in Postgres and Elastic):
-    ```bash
-    docker compose down -v
-    ```
+  ```bash
+  docker compose down -v
+  ```
 3. Start the stack again:
-    ```bash
-    docker compose up -d
-    ```
+  ```bash
+  docker compose up -d
+  ```
 This will re-create the databases with the current credentials from your `.env` file.
 
 ---
@@ -206,9 +207,44 @@ This approach allows you to keep plugins outside of the container image, making 
 
 ---
 
+
+## Database Backup and Restore Scripts
+
+This repository includes utility shell scripts for backing up and restoring your PostgreSQL database:
+
+- `pg-backup.sh`: Create a backup of your PostgreSQL database. Optionally, you can exclude user-related tables from the backup.
+  - Usage:
+    ```bash
+    ./pg-backup.sh <database_name> [--exclude-user-tables]
+    ```
+  - Example (full backup):
+    ```bash
+    ./pg-backup.sh leadcms
+    ```
+  - Example (excluding user tables):
+    ```bash
+    ./pg-backup.sh leadcms --exclude-user-tables
+    ```
+
+- `pg-restore.sh`: Restore a PostgreSQL database from a backup file. If the database does not exist, it will be created automatically.
+  - Usage:
+    ```bash
+    ./pg-restore.sh <database_name> <backup_file>
+    ```
+
+- `pg-restore-media.sh`: Restore only the `media` table from a backup file into the specified database.
+  - Usage:
+    ```bash
+    ./pg-restore-media.sh <database_name> <backup_file>
+    ```
+
+All scripts use environment variables from your `.env` file for database credentials. Make sure your `.env` is up to date before running these scripts.
+
+---
+
 ## Limitations of the Sample Setup
 
-- **No backup or restore automation** for databases or search indices.
+- **No backup or restore automation** for databases (only manual scripts are provided).
 - **No high availability or failover** for any service.
 - **No monitoring, alerting, or log aggregation** included.
 - **No scaling or load balancing** configuration.
