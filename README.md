@@ -210,35 +210,65 @@ This approach allows you to keep plugins outside of the container image, making 
 
 ## Database Backup and Restore Scripts
 
-This repository includes utility shell scripts for backing up and restoring your PostgreSQL database:
+This repository includes utility scripts for backing up and restoring your PostgreSQL database, available in both shell script and PowerShell versions:
 
-- `pg-backup.sh`: Create a backup of your PostgreSQL database. Optionally, you can exclude user-related tables from the backup.
-  - Usage:
-    ```bash
-    ./pg-backup.sh <database_name> [--exclude-user-tables]
-    ```
-  - Example (full backup):
-    ```bash
-    ./pg-backup.sh leadcms
-    ```
-  - Example (excluding user tables):
-    ```bash
-    ./pg-backup.sh leadcms --exclude-user-tables
-    ```
+### PostgreSQL Backup
 
-- `pg-restore.sh`: Restore a PostgreSQL database from a backup file. If the database does not exist, it will be created automatically.
-  - Usage:
-    ```bash
-    ./pg-restore.sh <database_name> <backup_file>
-    ```
+Create a backup of your PostgreSQL database. Optionally, you can exclude user-related tables from the backup.
 
-- `pg-restore-media.sh`: Restore only the `media` table from a backup file into the specified database.
-  - Usage:
-    ```bash
-    ./pg-restore-media.sh <database_name> <backup_file>
-    ```
+#### On Linux/macOS
 
-All scripts use environment variables from your `.env` file for database credentials. Make sure your `.env` is up to date before running these scripts.
+```bash
+./pg-backup.sh <database_name> [--exclude-user-tables]
+```
+
+Examples:
+- Full backup: `./pg-backup.sh leadcms`
+- Excluding user tables: `./pg-backup.sh leadcms --exclude-user-tables`
+
+#### On Windows
+
+```powershell
+.\pg-backup.ps1 <database_name> [-ExcludeUserTables]
+```
+
+Examples:
+- Full backup: `.\pg-backup.ps1 leadcms`
+- Excluding user tables: `.\pg-backup.ps1 leadcms -ExcludeUserTables`
+
+### PostgreSQL Restore
+
+Restore a PostgreSQL database from a backup file. If the database does not exist, it will be created automatically.
+
+#### On Linux/macOS
+
+```bash
+./pg-restore.sh <database_name> <backup_file>
+```
+
+#### On Windows
+
+```powershell
+.\pg-restore.ps1 <database_name> <backup_file>
+```
+
+### PostgreSQL Media Table Restore
+
+Restore only the `media` table from a backup file into the specified database.
+
+#### On Linux/macOS
+
+```bash
+./pg-restore-media.sh <database_name> <backup_file>
+```
+
+#### On Windows
+
+```powershell
+.\pg-restore-media.ps1 <database_name> <backup_file>
+```
+
+**Note:** All scripts use environment variables from your `.env` file for database credentials. Make sure your `.env` is up to date before running these scripts.
 
 ---
 
